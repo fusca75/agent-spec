@@ -45,3 +45,20 @@ O RREO apresenta previsão e realização orçamentárias agregadas, e não cron
 - `data/municipios/`: cache de consultas por código IBGE.
 
 As informações são agregadas e destinam-se à consulta pública. Valide dados críticos diretamente nas fontes oficiais antes de tomar decisões ou registrar denúncias.
+
+## Publicar no Render
+
+O repositório inclui um Blueprint em `render.yaml`. Ele cria um Web Service Python, usa a porta `PORT` fornecida pelo Render, escuta em `0.0.0.0` e verifica a rota `/healthz`. Os dados consultados são cache local temporário: no plano Free, o sistema de arquivos é efêmero e o serviço pode suspender após 15 minutos sem tráfego; após reinício ou suspensão, a primeira consulta pode demorar enquanto busca as fontes oficiais. Para persistir esse cache num plano pago, conecte um disco em `/var/data` e configure `DASHBOARD_DATA_DIR=/var/data` nas variáveis do serviço. Outra opção é substituir o cache por um banco/serviço de armazenamento.
+
+Passos pelo painel:
+
+1. Abra o [Render Dashboard](https://dashboard.render.com/) e escolha **New > Blueprint**.
+2. Conecte sua conta GitHub, se ainda não estiver conectada, e selecione `fusca75/agent-spec`.
+3. Escolha a branch `main` e o arquivo Blueprint `render.yaml` na raiz do repositório.
+4. Revise o Web Service `transparencia-municipal` e selecione **Deploy Blueprint**.
+5. Acompanhe o primeiro build e deploy nos logs do serviço. Quando ficar **Live**, abra a URL `*.onrender.com` exibida no painel.
+6. Opcional: para habilitar os registros do Portal da Transparência, obtenha uma chave na página de cadastro da API. No serviço do Render, abra **Environment > Add Environment Variable**, cadastre `PT_API_KEY` com a chave, salve e faça o redeploy. Não coloque a chave em `render.yaml`, no HTML ou no GitHub.
+
+Para cache persistente (opcional e em plano pago): na página do serviço, crie um Persistent Disk montado em `/var/data` e adicione `DASHBOARD_DATA_DIR=/var/data` nas variáveis de ambiente. O plano Free não oferece disco persistente.
+
+O deploy automático está configurado para cada commit enviado à `main`. O Render exige que Web Services escutem em `0.0.0.0` e na porta indicada por `PORT`; as variáveis de ambiente são o local apropriado para credenciais. [Web Services](https://render.com/docs/web-services) · [Blueprints](https://render.com/docs/blueprint-spec) · [Variáveis e segredos](https://render.com/docs/configure-environment-variables) · [Limitações do plano Free](https://render.com/docs/free)

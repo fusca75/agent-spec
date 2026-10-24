@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: transparencia-municipal
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python servidor_dashboard.py
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: PYTHON_VERSION
+        value: 3.14.8

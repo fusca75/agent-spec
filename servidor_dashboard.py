@@ -3,7 +3,10 @@
 """Servidor local da dashboard e endpoint de consulta atualizada por municipio."""
 
 import json
+import os
 import threading
+import time
+from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -12,9 +15,15 @@ import coletor_vivo
 
 
 BASE_DIR = Path(__file__).resolve().parent
-CACHE_DIR = BASE_DIR / "data" / "municipios"
+DATA_DIR = Path(os.environ.get("DASHBOARD_DATA_DIR", str(BASE_DIR / "data")))
+CACHE_DIR = DATA_DIR / "municipios"
+HOST_PADRAO = "127.0.0.1"
 PORTA_PADRAO = 8000
+CACHE_TTL_SEGUNDOS = 900
+INTERVALO_POST_CLIENTE = 3
 COLETA_LOCK = threading.Lock()
+CLIENT_LOCK = threading.Lock()
+ULTIMA_CONSULTA_CLIENTE = {}
 
 
 def _linhas(payload, chave):
@@ -139,12 +148,38 @@ def _ler_cache(codigo_ibge):
         return None
 
 
+def _cache_recente(payload):
+    try:
+        gerado_em = datetime.fromisoformat(payload.get("gerado_em", ""))
+        idade = (datetime.now() - gerado_em).total_seconds()
+        return 0 <= idade < CACHE_TTL_SEGUNDOS
+    except (TypeError, ValueError):
+        return False
+
+
+def _cliente_em_intervalo(ip):
+    agora = time.monotonic()
+    with CLIENT_LOCK:
+        anterior = ULTIMA_CONSULTA_CLIENTE.get(ip, 0)
+        if agora - anterior < INTERVALO_POST_CLIENTE:
+            return True
+        ULTIMA_CONSULTA_CLIENTE[ip] = agora
+        if len(ULTIMA_CONSULTA_CLIENTE) > 5000:
+            expirados = [chave for chave, instante in ULTIMA_CONSULTA_CLIENTE.items() if agora - instante > 60]
+            for chave in expirados:
+                ULTIMA_CONSULTA_CLIENTE.pop(chave, None)
+        return False
+
+
 class DashboardHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(BASE_DIR), **kwargs)
 
     def do_GET(self):
         parsed = urlparse(self.path)
+        if parsed.path == "/healthz":
+            self._responder(200, {"status": "ok"})
+            return
         if parsed.path == "/api/cache":
             try:
                 params = parse_qs(parsed.query)
@@ -160,9 +195,41 @@ class DashboardHandler(SimpleHTTPRequestHandler):
                 return
             self._responder(200, payload)
             return
-        if parsed.path == "/":
-            self.path = "/dashboard_repasses.html"
-        super().do_GET()
+        if parsed.path in ("/", "/dashboard_repasses.html"):
+            conteudo = (BASE_DIR / "dashboard_repasses.html").read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(conteudo)))
+            self.send_header("Cache-Control", "no-cache")
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.send_header("X-Frame-Options", "DENY")
+            self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
+            self.end_headers()
+            self.wfile.write(conteudo)
+            return
+        self.send_error(404, "Endpoint nao encontrado")
+
+    def do_HEAD(self):
+        parsed = urlparse(self.path)
+        if parsed.path not in ("/", "/dashboard_repasses.html", "/healthz"):
+            self.send_error(404, "Endpoint nao encontrado")
+            return
+        if parsed.path == "/healthz":
+            conteudo = json.dumps({"status": "ok"}).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(conteudo)))
+            self.end_headers()
+            return
+        conteudo = (BASE_DIR / "dashboard_repasses.html").read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(conteudo)))
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
+        self.end_headers()
 
     def do_POST(self):
         if urlparse(self.path).path != "/api/atualizar":
@@ -175,19 +242,30 @@ class DashboardHandler(SimpleHTTPRequestHandler):
                 raise ValueError("Requisicao invalida.")
             corpo = json.loads(self.rfile.read(tamanho).decode("utf-8"))
             codigo_ibge = int(corpo.get("municipio"))
+            forcar = corpo.get("forcar") is True
             if codigo_ibge < 1000000 or codigo_ibge > 9999999:
                 raise ValueError("Codigo IBGE invalido.")
         except (ValueError, TypeError, json.JSONDecodeError, UnicodeDecodeError) as erro:
             self._responder(400, {"erro": str(erro)})
             return
 
+        client_ip = self.headers.get("X-Forwarded-For", "").split(",", 1)[0].strip()
+        if _cliente_em_intervalo(client_ip or self.client_address[0]):
+            self._responder(429, {"erro": "Aguarde alguns segundos antes de iniciar outra consulta."})
+            return
+
         try:
             # O coletor tem estado global para respeitar o intervalo oficial do Siconfi.
             # A trava tambem impede duas consultas simultaneas de sobrescreverem o ente.
             with COLETA_LOCK:
-                payload = coletor_vivo.coletar(municipio_ibge=codigo_ibge, persistir=False)
-                payload = _aplicar_cache(payload, _ler_cache(codigo_ibge))
-                _salvar_cache(codigo_ibge, payload)
+                cache = _ler_cache(codigo_ibge)
+                if cache and _cache_recente(cache) and not forcar:
+                    payload = dict(cache)
+                    payload["consulta_cache"] = True
+                else:
+                    payload = coletor_vivo.coletar(municipio_ibge=codigo_ibge, persistir=False)
+                    payload = _aplicar_cache(payload, cache)
+                    _salvar_cache(codigo_ibge, payload)
             self._responder(200, payload)
         except Exception as erro:
             coletor_vivo.log(f"Falha na consulta do municipio {codigo_ibge}: {erro}")
@@ -199,14 +277,18 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(corpo)))
         self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
         self.end_headers()
         self.wfile.write(corpo)
 
 
 def main():
-    servidor = ThreadingHTTPServer(("127.0.0.1", PORTA_PADRAO), DashboardHandler)
-    print(f"Dashboard local em http://127.0.0.1:{PORTA_PADRAO}")
-    print("Mantenha esta janela aberta enquanto consulta dados oficiais.")
+    host = os.environ.get("HOST", HOST_PADRAO)
+    porta = int(os.environ.get("PORT", str(PORTA_PADRAO)))
+    servidor = ThreadingHTTPServer((host, porta), DashboardHandler)
+    print(f"Dashboard em http://{host}:{porta}")
     try:
         servidor.serve_forever()
     except KeyboardInterrupt:
