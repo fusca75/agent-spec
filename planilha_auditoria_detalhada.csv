@@ -1,0 +1,33 @@
+﻿Area_Atuacao;Esfera_Origem;Orgao_Fundo_Concedente;Conta_Contabil;Programa_Destinacao;Valor_Bruto_BRL;Deducao_FUNDEB_BRL;Valor_Liquido_BRL;Status_Regularidade;Justificativa_Nota_Tecnica
+Saúde (SUS);Federal;Ministério da Saúde / FNS;1.7.1.3.50.1.0;Bloco Atenção Primária à Saúde;9802714,25;0,00;9802714,25;Em dia (exato);Transferência Fundo a Fundo mensal regular cumprida no exercício
+Saúde (SUS);Federal;Ministério da Saúde / FNS;1.7.1.3.50.2.0;Bloco Atenção Especializada (MAC);27881216,56;0,00;27881216,56;Em dia (exato);Custeio mensal de média e alta complexidade hospitalar/ambulatorial
+Saúde (SUS);Federal;Ministério da Saúde / FNS;1.7.1.3.50.3.0;Bloco Vigilância em Saúde;1694706,58;0,00;1694706,58;Em dia (exato);Ações de vigilância epidemiológica e sanitária
+Saúde (SUS);Federal;Ministério da Saúde / FNS;1.7.1.3.50.4.0;Bloco Assistência Farmacêutica (CBAF);1627298,20;0,00;1627298,20;Em dia (exato);Custeio da farmácia básica municipal repassado regularmente
+Saúde (SUS);Federal;Ministério da Saúde / FNS;1.7.1.3.50.5.0;Bloco Gestão do SUS;2210507,06;0,00;2210507,06;Em dia (exato);Manutenção de sistemas e suporte administrativo em saúde
+Saúde (SUS);Estadual;Secretaria da Saúde - SP;1.7.2.3.00.0.0;SUS Estadual - Custeio de Ações de Saúde;18712515,29;0,00;18712515,29;Conforme;Pactuação CIB estadual realizada integralmente no ano
+Saúde (SUS);Federal;Ministério da Saúde / FNS;2.4.1.1.50.1.0;Bloco de Estruturação (Capital / Obras);288843,00;0,00;288843,00;Conforme;Repasse de investimento em infraestrutura das unidades de saúde
+Saúde (SUS);Estadual;Secretaria da Saúde - SP;2.4.2.1.50.0.0;SUS Estadual - Investimentos de Capital;100000,00;0,00;100000,00;Conforme;Recursos estaduais para aquisição de equipamentos
+Educação;Multigovernamental;Tesouro Nacional / FUNDEB;1.7.5.1.00.0.0;Retorno e Distribuição do FUNDEB;127651133,33;0,00;127651133,33;Conforme;Valor recebido pelo município superou as deduções em R$ 57,18 milhões
+Educação;Federal;MEC / FNDE;1.7.1.4.50.0.0;Cota Municipal do Salário-Educação;8807769,04;0,00;8807769,04;Conforme;Repasse automático baseado no Censo Escolar e arrecadação da RFB
+Educação;Federal;MEC / FNDE;1.7.1.4.52.0.0;PNAE (Alimentação Escolar / Merenda);3241500,00;0,00;3241500,00;Em dia (exato);10 parcelas mensais transferidas conforme calendário oficial do FNDE
+Educação;Estadual;Secretaria da Educação - SP;1.7.2.4.51.0.0;Convênios do Estado para Educação;5436399,58;0,00;5436399,58;Conforme;Parcerias para transporte escolar compartilhado e melhorias escolares
+Educação;Federal;MEC / FNDE;1.7.1.4.53.0.0;PNATE (Apoio ao Transporte Escolar);47688,42;0,00;47688,42;Conforme;Parcelas regulares para transporte de alunos da zona rural
+Educação;Federal;MEC / FNDE;1.7.1.4.99.0.0;Outras Transferências Diretas do FNDE;264919,34;0,00;264919,34;Indeterminado;Ausência de cronograma específico no portal aberto para avaliar prazo
+Educação;Federal;MEC / FNDE;1.7.1.4.51.0.0;PDDE (Dinheiro Direto na Escola);480,00;0,00;480,00;Pendente;Valor residual muito reduzido em relação a exercícios anteriores
+Cotas Tributárias;Estadual;SEFAZ-SP;1.7.2.1.50.0.0;Cota-Parte do ICMS;166351984,32;33270396,68;133081587,64;Em dia (exato);Dedução do FUNDEB de exatos 20,00% sobre a receita bruta creditada
+Cotas Tributárias;Federal;Secretaria do Tesouro Nacional;1.7.1.1.51.1.0;FPM - Cota Mensal Ordinária;129389201,43;25877839,37;103511362,06;Em dia (exato);Decêndios decendiais creditados nos dias 10, 20 e 30 com 20,00% de FUNDEB
+Cotas Tributárias;Federal;Secretaria do Tesouro Nacional;1.7.1.1.51.2.0;FPM - Cotas Extras 1% (Julho/Dezembro);13349979,96;0,00;13349979,96;Em dia (exato);Parcelas especiais imunes à retenção do FUNDEB (ECs 55/07 e 84/14)
+Cotas Tributárias;Estadual;SEFAZ-SP;1.7.2.1.51.0.0;Cota-Parte do IPVA;54193454,35;10860846,83;43332607,52;Conforme;Dedução de 20,04% com compensações rotineiras de créditos estaduais
+Cotas Tributárias;Estadual;SEFAZ-SP;1.7.2.1.52.0.0;Cota-Parte do IPI - Municípios;1280712,19;256142,49;1024569,70;Em dia (exato);Dedução do FUNDEB de exatos 20,00% sobre o IPI-Exportação estadual
+Cotas Tributárias;Federal;Secretaria do Tesouro Nacional;1.7.1.1.52.0.0;Cota-Parte do ITR (Territorial Rural);994510,61;198901,98;795608,63;Em dia (exato);Dedução do FUNDEB de exatos 20,00% sobre a arrecadação da RFB
+Assistência Social;Federal;MDS / FNAS;1.7.1.6.00.0.0;Repasses Fundo a Fundo do FNAS;1914380,60;0,00;1914380,60;Em dia (exato);Manutenção de CRAS, CREAS e rede socioassistencial municipal
+Assistência Social;Estadual;Secretaria Desenv. Social - SP;1.7.2.9.51.0.0;Repasses Estaduais - Fundo Social SP;1034379,64;0,00;1034379,64;Conforme;Custeio compartilhado de programas de proteção social básica
+Infraestrutura e Emendas;Federal;Presidência da República / STN;1.7.1.9.57.0.0;Transferência Especial (Emenda Pix - Custeio);900000,00;0,00;900000,00;Em dia (exato);Emenda individual parlamentar creditada diretamente na conta municipal
+Infraestrutura e Emendas;Federal;Presidência da República / STN;2.4.1.9.51.0.0;Transferência Especial (Emenda Pix - Capital);300000,00;0,00;300000,00;Em dia (exato);Emenda de capital vinculada a investimentos e equipamentos
+Infraestrutura e Emendas;Federal;Ministério do Meio Ambiente;2.4.1.4.53.0.0;Convênios Federais de Meio Ambiente;876585,18;0,00;876585,18;Conforme;Liberação conforme medição e cronograma físico-financeiro da obra
+Infraestrutura e Emendas;Estadual;Governo do Estado de SP;2.4.2.2.52.0.0;Convênios Estaduais de Saneamento;225485,34;0,00;225485,34;Conforme;Parcela de apoio estadual para saneamento e despoluição hídrica
+Infraestrutura e Emendas;Federal;Ministério das Cidades / Caixa;2.4.1.4.52.0.0;Convênios Federais de Saneamento;51808,88;0,00;51808,88;Pendente;Saldo remanescente de convênio antigo com liberação parcelada
+Infraestrutura e Emendas;Estadual;Governo do Estado de SP;2.4.2.2.99.0.0;Outras Parcerias e Convênios Estaduais;2025000,00;0,00;2025000,00;Conforme;Convênios estaduais para infraestrutura urbana e pavimentação
+Recursos Naturais;Federal;ANP / Tesouro Nacional;1.7.1.2.52.4.0;FEP - Fundo Especial do Petróleo (Royalties);2565303,78;0,00;2565303,78;Conforme;Repasses mensais de royalties com oscilação do barril de petróleo/câmbio
+Recursos Naturais;Estadual;SEFAZ-SP;1.7.2.2.52.0.0;Cota-Parte Royalties do Petróleo Estadual;368447,74;0,00;368447,74;Conforme;Repasses estaduais de royalties de partilha
+Recursos Naturais;Federal;ANM / Tesouro Nacional;1.7.1.2.51.0.0;CFEM - Compensação Recursos Minerais;176104,68;0,00;176104,68;Em dia (exato);Rateio da mineração creditado conforme portarias da ANM
