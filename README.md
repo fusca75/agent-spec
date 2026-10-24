@@ -1,95 +1,47 @@
-# Monitor de Verbas Públicas Municipais & Medicamentos da Rede Pública (Agent Spec)
+# Transparência municipal
 
-Especificação completa de Agente de Inteligência Artificial (`agent.md` / `agents.md`) especializado em **governo digital, finanças públicas brasileiras e políticas de assistência farmacêutica do Sistema Único de Saúde (SUS)**.
+Dashboard local para consultar registros financeiros e transferências públicas de municípios brasileiros. A página usa o código oficial do município no IBGE, consulta dados abertos do Tesouro Nacional (Siconfi) e, quando há chave configurada, consulta registros do Portal da Transparência. A RENAME é apresentada como referência oficial de medicamentos do SUS.
 
-Este projeto define as instruções comportamentais, metodologias de consulta e diretrizes de conformidade para que modelos de IA atuem como auditores e analistas de dados públicos, organizando repasses federais e estaduais para municípios brasileiros e detalhando a distribuição de medicamentos por esfera de responsabilidade.
+## Iniciar
 
----
+Na pasta do projeto, execute:
 
-## 🎯 Objetivo do Projeto
-
-O objetivo desta especificação é capacitar assistentes e agentes autônomos a:
-1. **Rastrear e auditar repasses financeiros:** Localizar receitas transferidas pela União e pelos Estados aos municípios (FPM, FUNDEB, SUS, FNAS, Emendas Parlamentares, ICMS, IPVA, Royalties, etc.).
-2. **Classificar a regularidade de repasses:** Avaliar se as transferências estão *Em dia*, *Pendentes/Não realizadas* ou em situação *Indeterminada*, confrontando previsões com arrecadações e cronogramas oficiais.
-3. **Mapear a Assistência Farmacêutica (SUS):** Estruturar o fornecimento de medicamentos da rede pública separando-os didaticamente por esferas e componentes (Componente Básico, Especializado e Estratégico).
-4. **Democratizar a transparência pública:** Traduzir termos técnicos orçamentários (ex.: *repasses fundo a fundo*, *dedução do FUNDEB*, *RCL*, *LME*) para uma linguagem clara e acessível a qualquer cidadão.
-
----
-
-## 🏛️ Fontes de Dados Oficiais Homologadas
-
-O agente opera **exclusivamente com dados oficiais de portais e APIs públicas**, seguindo a ordem de prioridade:
-
-| Ordem | Fonte / Plataforma | Abrangência / Finalidade |
-|:---:|---|---|
-| **1º** | **Portal da Transparência do Governo Federal** | Transferências diretas, emendas parlamentares e convênios |
-| **2º** | **Fundo Nacional de Saúde (FNS)** | Repasses Fundo a Fundo e blocos de custeio/investimento do SUS |
-| **3º** | **Sistema Siconfi (Secretaria do Tesouro Nacional)** | DCA (Contas Anuais), RREO (Execução Orçamentária) e RGF (Gestão Fiscal) |
-| **4º** | **Transferegov.br / Siconv** | Convênios, instrumentos de repasse e contratos de obras |
-| **5º** | **Fundo Nacional de Desenvolvimento da Educação (FNDE)** | Repasses do Salário-Educação, PNAE (Merenda), PNATE (Transporte) e PDDE |
-| **6º** | **Tribunais de Contas (TCEs) e Portais Estaduais** | Cotas-partes de impostos estaduais (ICMS, IPVA) e auditorias de despesa |
-| **7º** | **RENAME e REMUME (Ministério da Saúde / Municípios)** | Componentes da Assistência Farmacêutica e Protocolos Clínicos (PCDT) |
-
-> ⚠️ **Aviso de Integridade:** O agente é estritamente proibido de utilizar especulações, opiniões de imprensa ou inventar dados numéricos. Quando uma fonte oficial não dispuser do dado ou estiver desatualizada, a restrição é informada explicitamente.
-
----
-
-## 📊 Regras de Classificação e Metodologia
-
-### 1. Status de Repasses
-Cada transferência pública analisada deve receber uma das seguintes classificações:
-* 🟢 **Em dia (positivo):** O repasse ocorreu dentro do prazo previsto, ou os demonstrativos do encerramento orçamentário confirmam pagamento/arrecadação integral concluída.
-* 🔴 **Pendente ou não realizado (negativo):** O prazo legal previsto expirou sem registro de crédito bancário, ou a fonte aponta cancelamento/suspensão por inadimplência.
-* 🟡 **Indeterminado:** A fonte oficial consultada não possui cronograma prévio para comparação ou apresenta registros parciais/incompletos. O motivo da indeterminação é sempre justificado.
-
-### 2. Divisão da Assistência Farmacêutica
-Os medicamentos são categorizados estritamente pelas três esferas de pactuação do SUS:
-* **Esfera Municipal (Componente Básico – CBAF / REMUME):** Medicamentos essenciais da Atenção Primária (hipertensão, diabetes, antibióticos, analgésicos), dispensados nas Unidades Básicas de Saúde (UBSs) e Farmácias Municipais.
-* **Esfera Estadual (Componente Especializado – CEAF / "Alto Custo"):** Medicamentos de alta complexidade e custo elevado (biológicos, imunossupressores, doenças raras/crônicas), regulados por LME (Laudo de Solicitação) e PCDT.
-* **Esfera Federal (Componente Estratégico – CESAF):** Medicamentos adquiridos centralizadamente pelo Ministério da Saúde para programas de controle de endemias e perfis epidemiológicos (Tuberculose, Hanseníase, HIV/AIDS, Malária, vacinas do PNI).
-
----
-
-## 📁 Estrutura do Repositório
-
-```text
-├── agent.md             # Especificação e prompt de sistema do agente (versão padrão)
-├── agents.md            # Regra de projeto para o ambiente Antigravity / Gemini CLI
-├── transfers_sb.csv     # Amostra de dados brutos extraídos (exercício 2024 de Santa Bárbara d'Oeste - SP)
-└── README.md            # Documentação e guia de uso do projeto
+```powershell
+python servidor_dashboard.py
 ```
 
----
+Abra [http://127.0.0.1:8000](http://127.0.0.1:8000). A lupa pesquisa a lista nacional de municípios do IBGE. Ao escolher uma cidade, a dashboard exibe primeiro o cache daquela cidade, se existir, e inicia uma nova consulta oficial.
 
-## 🚀 Como Usar Este Projeto
+Os dados são atualizados ao abrir a página, ao trocar de município, pelo botão **Atualizar agora**, ao voltar para a aba e a cada 15 minutos enquanto ela estiver visível. Isso atualiza a consulta; a data de publicação de cada base depende do órgão responsável e pode ser anterior ao dia da consulta. A tela separa o horário da consulta da data ou período a que o dado se refere.
 
-### 1. Com o Google Antigravity / Gemini CLI
-Basta clonar este repositório no seu diretório de trabalho ou apontar para a pasta do projeto. O assistente carregará automaticamente o arquivo `AGENTS.md` como diretriz hierárquica comportamental permanente:
+O servidor grava consultas em `data/municipios/<código-IBGE>.json`. Se uma fonte não retornar linhas novas, dados municipais previamente consultados podem ser reaproveitados; a página indica esse uso e conserva a referência original de cada linha. Dados de municípios ainda não consultados não são inventados nem preenchidos com a amostra histórica de outra cidade.
 
-```bash
-git clone https://github.com/fusca75/agent-spec.git
-cd agent-spec
-```
+## Fontes, limites e atualização
 
-### 2. Com outros Agentes e Modelos de Linguagem (Claude, ChatGPT, etc.)
-Você pode copiar o conteúdo integral de [`agent.md`](agent.md) e colá-lo como **Prompt de Sistema (System Prompt)** ou como **Instruções Personalizadas (Custom Instructions)** da sua ferramenta.
+- **IBGE Localidades:** identifica municípios e códigos IBGE; não fornece valores de repasses.
+- **Siconfi / Tesouro Nacional:** fornece RREO, extrato de entregas e DCA. O RREO é uma demonstração periódica, não um fluxo de pagamentos em tempo real. O painel procura o último período publicado e apresenta o exercício/período.
+- **Portal da Transparência:** oferece consultas de convênios, despesas e programas federais. A API exige cadastro e token. Para habilitar as consultas do coletor, configure `PT_API_KEY` como variável de ambiente antes de iniciar o servidor. Sem a chave, a tela informa a limitação e mantém os dados públicos acessíveis pelo Siconfi.
+- **RENAME / Ministério da Saúde:** a seção de medicamentos direciona à edição oficial e à ferramenta de consulta do Ministério da Saúde. A presença na RENAME não confirma estoque ou disponibilidade em uma unidade de saúde municipal.
 
-### 3. Exemplos de Consultas Suportadas
-* *"Quais foram os repasses federais da saúde para o município de Santa Bárbara d'Oeste em 2024?"*
-* *"Qual o percentual que a cidade X aplicou em educação básica pelo FUNDEB no último ano?"*
-* *"Como funciona a retirada de remédios para artrite reumatoide pelo SUS na minha cidade?"*
-* *"Compare os indicadores fiscais e gastos em saúde entre a cidade A e a cidade B."*
+O Siconfi limita o uso da API a uma requisição por segundo. Uma consulta pode demorar enquanto procura o último demonstrativo disponível. A tela mantém o cache à vista durante esse processo.
 
----
+## Escopo das APIs indicadas no `agents.md`
 
-## 🛡️ Ética, Transparência e LGPD
+As URLs entregues foram avaliadas conforme sua finalidade. O catálogo do dados.gov.br descreve conjuntos de dados; a API COFIEX se refere a projetos com financiamento externo e garantia da União; os endpoints do CADE tratam de atos de concentração e consultas por protocolo/documento; o endpoint ConectaGov fornece autenticação; e o eAUD é um sistema de auditoria com acesso próprio. Esses serviços não são fontes gerais de pagamentos municipais abertas para esta dashboard. Os endpoints que consultam CPF/CNPJ não são utilizados.
 
-* **Privacidade e LGPD:** O agente opera unicamente com dados públicos e agregados de finanças municipais. Jamais são expostos dados pessoais sensíveis ou identificadores individuais de munícipes e pacientes.
-* **Neutralidade Absoluta:** O agente mantém postura estritamente técnica, analítica e imparcial, sem emissão de juízos de valor político-partidários sobre governantes ou administrações.
-* **Validação Prévia:** Todas as análises orientam o cidadão a validar dados nos portais locais antes de qualquer tomada de decisão jurídica, administrativa ou formalização de denúncia a órgãos de controle externo.
+## Status e interpretação
 
----
+- **Em dia / positivo:** usado somente se a fonte trouxer evidência suficiente de pagamento no prazo.
+- **Pendente / negativo:** usado para situações explicitamente suspensas, canceladas ou rescindidas na fonte.
+- **Indeterminado:** usado quando a base mostra valores, execução, vigência ou ausência de registros, mas não oferece um calendário de pagamento que permita verificar pontualidade.
 
-## 📄 Licença
+O RREO apresenta previsão e realização orçamentárias agregadas, e não cronogramas individuais de repasse. Por isso, comparação entre esses valores, isoladamente, não comprova atraso nem pagamento no prazo.
 
-Este projeto é disponibilizado sob a licença [MIT](https://opensource.org/licenses/MIT). Sinta-se livre para utilizar, adaptar e expandir esta especificação para aprimorar o controle social e a transparência pública no Brasil.
+## Arquivos principais
+
+- `dashboard_repasses.html`: interface, busca de municípios, cache em tela, exportação CSV e atualização periódica.
+- `servidor_dashboard.py`: servidor local, endpoint de cache por município e endpoint de atualização.
+- `coletor_vivo.py`: integração com IBGE, Siconfi e Portal da Transparência.
+- `data/municipios/`: cache de consultas por código IBGE.
+
+As informações são agregadas e destinam-se à consulta pública. Valide dados críticos diretamente nas fontes oficiais antes de tomar decisões ou registrar denúncias.
